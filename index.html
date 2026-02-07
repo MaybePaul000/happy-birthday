@@ -133,20 +133,19 @@
       position: relative;
     }
 
-    .text-container {
+    .card-content {
       background: rgba(255, 255, 255, 0.82);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(120, 100, 90, 0.2);
       border-radius: 12px;
-      padding: 1.25rem 1.75rem;
-      margin-bottom: 1rem;
+      padding: 1.5rem 1.75rem;
       max-width: 22rem;
       box-shadow: 0 4px 20px rgba(80, 60, 50, 0.08);
       position: relative;
       z-index: 2;
+      text-align: center;
     }
-    .text-container:last-of-type { margin-bottom: 0; }
 
     .title {
       font-size: clamp(1.8rem, 6vw, 3rem);
@@ -161,25 +160,12 @@
       font-weight: 400;
       font-style: italic;
       color: #7a6b6b;
-      margin: 0;
+      margin: 0 0 1.25rem;
       text-align: center;
     }
 
-    .message-container {
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(120, 100, 90, 0.18);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      max-width: 22rem;
-      box-shadow: 0 4px 20px rgba(80, 60, 50, 0.06);
-      position: relative;
-      z-index: 2;
-    }
-
     .message {
-      margin: 0;
+      margin: 0 0 1.25rem;
       text-align: center;
       font-size: 1.1rem;
       line-height: 1.65;
@@ -187,18 +173,9 @@
     }
 
     .from-section {
-      margin-top: 1rem;
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(120, 100, 90, 0.18);
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
-      max-width: 22rem;
-      box-shadow: 0 4px 20px rgba(80, 60, 50, 0.06);
-      text-align: center;
-      position: relative;
-      z-index: 2;
+      margin: 0;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(120, 100, 90, 0.15);
     }
     .from-section__label {
       font-size: 0.9rem;
@@ -325,25 +302,23 @@
   <!-- Stage 2: Main card -->
   <div class="main-stage" id="mainStage">
     <div class="card">
-      <div class="text-container">
+      <div class="card-content">
         <h1 class="title">Rima!</h1>
         <p class="subtitle">Šiandien švenčiame tavo gimtadienį!</p>
-      </div>
-      <div class="message-container">
         <p class="message">
           Šilčiausi sveikinimai ir linkėjimai! Skanios kavelės rytais! Daug laimės, šypsenos ir sveikatos! Kad sodas žydėtų kuo įvairiausiom spalvom!
         </p>
-      </div>
-      <div class="from-section">
-        <p class="from-section__label">Su meile nuo</p>
-        <ul class="from-section__list">
-          <li><span class="emoji" aria-hidden="true">👨</span> Pauliaus</li>
-          <li><span class="emoji" aria-hidden="true">👩</span> Mildos</li>
-          <li><span class="emoji" aria-hidden="true">👧</span> Urtės</li>
-          <li><span class="emoji" aria-hidden="true">👵</span> Aurelijos</li>
-          <li><span class="emoji" aria-hidden="true">🐈‍⬛</span> Mėtos</li>
-          <li><span class="emoji" aria-hidden="true">🐻‍❄️</span> Šiaurės</li>
-        </ul>
+        <div class="from-section">
+          <p class="from-section__label">Su meile nuo</p>
+          <ul class="from-section__list">
+            <li><span class="emoji" aria-hidden="true">👨</span> Pauliaus</li>
+            <li><span class="emoji" aria-hidden="true">👩</span> Mildos</li>
+            <li><span class="emoji" aria-hidden="true">👧</span> Urtės</li>
+            <li><span class="emoji" aria-hidden="true">👵</span> Aurelijos</li>
+            <li><span class="emoji" aria-hidden="true">🐈‍⬛</span> Mėtos</li>
+            <li><span class="emoji" aria-hidden="true">🐻‍❄️</span> Šiaurės</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
