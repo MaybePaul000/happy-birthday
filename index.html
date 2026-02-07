@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Su gimimo diena, Rima!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: clamp(14px, 2.5vw, 18px); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: #5c4a4a;
+      background: #f5f0eb url('background.png') center/cover no-repeat fixed;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+
+    /* ---------- Envelope stage ---------- */
+    .envelope-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .envelope-stage.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope {
+      width: min(90vw, 320px);
+      aspect-ratio: 1.42;
+      position: relative;
+      perspective: 900px;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 8px 24px rgba(80,60,60,0.2));
+      transition: transform 0.35s ease;
+    }
+    .envelope-stage:active .envelope__open-btn { transform: scale(0.98); }
+
+    .envelope__back {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #e8e0d8 0%, #d8d0c8 100%);
+      border-radius: 4px;
+      border: 1px solid rgba(120,100,90,0.25);
+    }
+    .envelope__flap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 52%;
+      background: linear-gradient(165deg, #eae2da 0%, #ddd4cc 50%, #d4ccc4 100%);
+      border-radius: 4px 4px 50% 50% / 4px 4px 12px 12px;
+      border: 1px solid rgba(120,100,90,0.28);
+      border-bottom: none;
+      transform-origin: top center;
+      transition: transform 0.65s ease;
+      backface-visibility: hidden;
+    }
+    .envelope-stage.opened .envelope__flap {
+      transform: rotateX(-150deg);
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    .envelope__front {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 0;
+      height: 50%;
+      background: linear-gradient(180deg, #e0d8d0 0%, #d8d0c8 100%);
+      border-radius: 0 0 4px 4px;
+      border: 1px solid rgba(120,100,90,0.25);
+      border-top: none;
+    }
+    .envelope__open-btn {
+      font-family: inherit;
+      font-size: 1.05rem;
+      padding: 0.6rem 1.5rem;
+      margin-top: 1.25rem;
+      border: 1px solid rgba(120, 100, 90, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      color: #5c4a4a;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(80, 60, 50, 0.12);
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .envelope__open-btn:hover {
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 16px rgba(80, 60, 50, 0.15);
+    }
+    .envelope__open-hint {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #7a6b6b;
+      font-style: italic;
+    }
+
+    /* ---------- Main card (after envelope) ---------- */
+    .main-stage {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease 0.25s, visibility 0.5s ease 0.25s;
+    }
+    .main-stage.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .card {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .text-container {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 100, 90, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 1rem;
+      max-width: 22rem;
+      box-shadow: 0 4px 20px rgba(80, 60, 50, 0.08);
+      position: relative;
+      z-index: 2;
+    }
+    .text-container:last-of-type { margin-bottom: 0; }
+
+    .title {
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-weight: 600;
+      text-align: center;
+      margin: 0 0 0.25rem;
+      color: #6b5b5b;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-weight: 400;
+      font-style: italic;
+      color: #7a6b6b;
+      margin: 0;
+      text-align: center;
+    }
+
+    .message-container {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 100, 90, 0.18);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      max-width: 22rem;
+      box-shadow: 0 4px 20px rgba(80, 60, 50, 0.06);
+      position: relative;
+      z-index: 2;
+    }
+
+    .message {
+      margin: 0;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.65;
+      color: #5c4a4a;
+    }
+
+    .from-section {
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 100, 90, 0.18);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      max-width: 22rem;
+      box-shadow: 0 4px 20px rgba(80, 60, 50, 0.06);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .from-section__label {
+      font-size: 0.9rem;
+      color: #7a6b6b;
+      font-style: italic;
+      margin: 0 0 0.5rem;
+    }
+    .from-section__list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.35rem 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.95rem;
+      color: #5c4a4a;
+    }
+    .from-section__list li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .from-section__list .emoji {
+      font-style: normal;
+    }
+
+    /* ---------- Flowers (petal-based, with border) ---------- */
+    .flowers-zone {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .flowers-zone .flower {
+      pointer-events: auto;
+      cursor: pointer;
+      position: absolute;
+      will-change: transform, opacity;
+    }
+
+    .flower {
+      --size: clamp(32px, 7vw, 48px);
+      width: var(--size);
+      height: var(--size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: none;
+    }
+    .flower__petals {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    /* Mayweed-style: narrow elongated petals radiating from center */
+    .flower .petal {
+      position: absolute;
+      width: 10%;
+      height: 44%;
+      top: 6%;
+      left: 45%;
+      border-radius: 50%;
+      transform-origin: 50% 98%;
+      border: 1px solid rgba(0, 0, 0, 0.07);
+    }
+
+    .flower__center {
+      width: 38%;
+      height: 38%;
+      border-radius: 50%;
+      position: relative;
+      z-index: 2;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: inset 0 1px 3px rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    /* Mayweed: pale petals + prominent golden center (palette from background) */
+    .flower.blush .petal { background: linear-gradient(180deg, #ebe3e0 0%, #ddd4d0 50%, #d0c4c0 100%); }
+    .flower.blush .flower__center { background: radial-gradient(circle at 35% 35%, #d8c8a8, #c4a878); }
+    .flower.cream .petal { background: linear-gradient(180deg, #f2ebe5 0%, #e8dfd8 50%, #ddd4cc 100%); }
+    .flower.cream .flower__center { background: radial-gradient(circle at 35% 35%, #d4c4a0, #b8a878); }
+    .flower.sage .petal { background: linear-gradient(180deg, #e8ebe0 0%, #d8ddcc 50%, #c8d0b8 100%); }
+    .flower.sage .flower__center { background: radial-gradient(circle at 35% 35%, #c0b888, #a09868); }
+    .flower.mauve .petal { background: linear-gradient(180deg, #e8e4e8 0%, #ddd8dc 50%, #d0c8cc 100%); }
+    .flower.mauve .flower__center { background: radial-gradient(circle at 35% 35%, #c8b898, #a89878); }
+
+    .flower.pop-out {
+      pointer-events: none;
+      animation: popOut 0.45s ease-out forwards;
+    }
+    @keyframes popOut {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      40% { transform: translate(-50%, -50%) scale(1.35); opacity: 0.9; }
+      100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+    }
+
+    .flower.fade-in-out {
+      animation: fadeInOut 2.8s ease-in-out forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+      12% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      88% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Stage 1: Envelope -->
+  <div class="envelope-stage" id="envelopeStage">
+    <div class="envelope">
+      <div class="envelope__back"></div>
+      <div class="envelope__front"></div>
+      <div class="envelope__flap"></div>
+    </div>
+    <button type="button" class="envelope__open-btn" id="envelopeOpenBtn" aria-label="Atidaryti atviruką">Atidaryti</button>
+  </div>
+
+  <!-- Stage 2: Main card -->
+  <div class="main-stage" id="mainStage">
+    <div class="card">
+      <div class="text-container">
+        <h1 class="title">Rima!</h1>
+        <p class="subtitle">Šiandien švenčiame tavo gimtadienį!</p>
+      </div>
+      <div class="message-container">
+        <p class="message">
+          Šilčiausi sveikinimai ir linkėjimai! Skanios kavelės rytais! Daug laimės, šypsenos ir sveikatos! Kad sodas žydėtų kuo įvairiausiom spalvom!
+        </p>
+      </div>
+      <div class="from-section">
+        <p class="from-section__label">Su meile nuo</p>
+        <ul class="from-section__list">
+          <li><span class="emoji" aria-hidden="true">👨</span> Pauliaus</li>
+          <li><span class="emoji" aria-hidden="true">👩</span> Mildos</li>
+          <li><span class="emoji" aria-hidden="true">👧</span> Urtės</li>
+          <li><span class="emoji" aria-hidden="true">👵</span> Aurelijos</li>
+          <li><span class="emoji" aria-hidden="true">🐈‍⬛</span> Mėtos</li>
+          <li><span class="emoji" aria-hidden="true">🐻‍❄️</span> Šiaurės</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="flowers-zone" id="flowersZone" aria-hidden="true"></div>
+
+  <audio id="song" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    (function () {
+      const envelopeStage = document.getElementById('envelopeStage');
+      const mainStage = document.getElementById('mainStage');
+      const flowersZone = document.getElementById('flowersZone');
+      const song = document.getElementById('song');
+
+      let cardOpened = false;
+
+      function openEnvelope() {
+        if (cardOpened) return;
+        cardOpened = true;
+        envelopeStage.classList.add('opened');
+        setTimeout(function () {
+          envelopeStage.classList.add('hidden');
+          mainStage.classList.add('visible');
+          song.play().catch(function () {});
+          startFlowers();
+        }, 450);
+      }
+
+      const envelopeOpenBtn = document.getElementById('envelopeOpenBtn');
+      envelopeOpenBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openEnvelope();
+      });
+      envelopeOpenBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEnvelope();
+        }
+      });
+
+      const types = ['blush', 'cream', 'sage', 'mauve'];
+      const padding = 0.04;
+      /* Middle container: avoid spawning inside the card (center area) */
+      const centerMinX = 0.26;
+      const centerMaxX = 0.74;
+      const centerMinY = 0.32;
+      const centerMaxY = 0.68;
+
+      function randomAroundContainer() {
+        let x, y;
+        do {
+          x = padding + Math.random() * (1 - 2 * padding);
+          y = padding + Math.random() * (1 - 2 * padding);
+        } while (x >= centerMinX && x <= centerMaxX && y >= centerMinY && y <= centerMaxY);
+        return { x: x, y: y };
+      }
+
+      function createFlower() {
+        const { x, y } = randomAroundContainer();
+        const el = document.createElement('div');
+        el.className = 'flower fade-in-out ' + types[Math.floor(Math.random() * types.length)];
+        el.setAttribute('role', 'presentation');
+        el.style.left = (x * 100) + '%';
+        el.style.top = (y * 100) + '%';
+        el.style.transform = 'translate(-50%, -50%)';
+        const petalCount = 12 + Math.floor(Math.random() * 6);
+        let petalsHtml = '';
+        for (let i = 0; i < petalCount; i++) petalsHtml += '<span class="petal"></span>';
+        el.innerHTML = '<div class="flower__petals">' + petalsHtml + '</div><span class="flower__center"></span>';
+        for (let i = 0; i < petalCount; i++) {
+          const deg = (360 / petalCount) * i;
+          el.querySelectorAll('.petal')[i].style.transform = 'rotate(' + deg + 'deg)';
+        }
+
+        el.addEventListener('click', function pop() {
+          if (el.classList.contains('pop-out')) return;
+          el.classList.remove('fade-in-out');
+          el.classList.add('pop-out');
+          setTimeout(function () { el.remove(); }, 500);
+        });
+
+        flowersZone.appendChild(el);
+        setTimeout(function () {
+          if (el.parentNode && !el.classList.contains('pop-out')) el.remove();
+        }, 2900);
+      }
+
+      function startFlowers() {
+        function scheduleNext() {
+          const delay = 50 + Math.random() * 160;
+          setTimeout(function () {
+            createFlower();
+            if (Math.random() < 0.6) createFlower();
+            if (Math.random() < 0.35)         createFlower();
+        if (Math.random() < 0.15) createFlower();
+        scheduleNext();
+          }, delay);
+        }
+        scheduleNext();
+      }
+    })();
+  </script>
+</body>
+</html>
